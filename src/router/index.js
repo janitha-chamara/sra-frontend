@@ -1,31 +1,31 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 import AppLayout from "@/AppLayout";
 import ReportView from "@/views/ReportView";
 import ProjectPlanView from "@/views/ProjectPlanView";
 
 const routes = [
   {
-    path: '/',
-    name: 'app-layout',
+    path: "/",
+    name: "app-layout",
     component: AppLayout,
     children: [
       {
-        path: '/project-plan',
-        name: 'project-plan',
+        path: "/project-plan",
+        name: "project-plan",
         component: ProjectPlanView,
       },
       {
-        path: '/report',
-        name: 'report',
+        path: "/report",
+        name: "report",
         component: ReportView,
-      }
-    ]
+      },
+    ],
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

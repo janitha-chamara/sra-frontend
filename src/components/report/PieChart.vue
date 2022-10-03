@@ -1,5 +1,5 @@
 <template>
-  <Highcharts :options="chartOptions"/>
+  <Highcharts :options="chartOptions" />
 </template>
 
 <script>
@@ -8,77 +8,87 @@ export default {
 
   data() {
     return {
-      chartOptions:  {
+      chartOptions: {
         chart: {
           plotBackgroundColor: null,
           plotBorderWidth: null,
           plotShadow: false,
-          type: 'pie'
+          type: "pie",
         },
         credits: {
-          enabled: false
+          enabled: false,
         },
         title: {
-          text: 'PROJECT DUE DATE IN CURRENT MONTH'
+          text: "PROJECT DUE DATE IN CURRENT MONTH",
         },
         tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+          pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
         },
         accessibility: {
           point: {
-            valueSuffix: '%'
-          }
+            valueSuffix: "%",
+          },
         },
         plotOptions: {
           pie: {
             allowPointSelect: true,
-            cursor: 'pointer',
+            cursor: "pointer",
             dataLabels: {
               enabled: true,
-              format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-            }
-          }
+              format: "<b>{point.name}</b>: {point.percentage:.1f} %",
+            },
+          },
         },
-        series: [{
-          name: 'Brands',
-          colorByPoint: true,
-          data: [{
-            name: 'Chrome',
-            y: 70.67,
-            sliced: true,
-            selected: true
-          }, {
-            name: 'Edge',
-            y: 14.77
-          },  {
-            name: 'Firefox',
-            y: 4.86
-          }, {
-            name: 'Safari',
-            y: 2.63
-          }, {
-            name: 'Internet Explorer',
-            y: 1.53
-          },  {
-            name: 'Opera',
-            y: 1.40
-          }, {
-            name: 'Sogou Explorer',
-            y: 0.84
-          }, {
-            name: 'QQ',
-            y: 0.51
-          }, {
-            name: 'Other',
-            y: 2.6
-          }]
-        }]
+        series: [
+          {
+            name: "Brands",
+            colorByPoint: true,
+            data: [
+              {
+                name: "Chrome",
+                y: 70.67,
+                sliced: true,
+                selected: true,
+              },
+              {
+                name: "Edge",
+                y: 14.77,
+              },
+              {
+                name: "Firefox",
+                y: 4.86,
+              },
+              {
+                name: "Safari",
+                y: 2.63,
+              },
+              {
+                name: "Internet Explorer",
+                y: 1.53,
+              },
+              {
+                name: "Opera",
+                y: 1.4,
+              },
+              {
+                name: "Sogou Explorer",
+                y: 0.84,
+              },
+              {
+                name: "QQ",
+                y: 0.51,
+              },
+              {
+                name: "Other",
+                y: 2.6,
+              },
+            ],
+          },
+        ],
       },
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
