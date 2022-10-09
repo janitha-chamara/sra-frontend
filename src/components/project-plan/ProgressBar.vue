@@ -4,7 +4,9 @@
       <div
         v-for="(progress, key) in progresses"
         :key="key"
-        :style="`width: ${progress.progress}%; background-color: ${progress.color}`"
+        :style="`width: ${getCalculatedPercentUsedProgress(
+          progress.progress
+        )}%; background-color: ${progress.color}`"
         :class="{
           'border-r-2 border-black': progress.name === 'percentComplete',
         }"
@@ -20,7 +22,7 @@
           v-if="progress.name === 'percentUsed'"
           class="absolute right-1/2 top-1 text-white"
         >
-          {{ progress.progress }}%
+          {{ getOverDueUsedPercentLabel(progress.progress) }}
         </div>
       </div>
     </div>
@@ -42,6 +44,24 @@ export default {
     width: {
       type: Number,
       default: () => 200,
+    },
+  },
+
+  methods: {
+    getCalculatedPercentUsedProgress(actualProgress) {
+      if (actualProgress <= 100) {
+        return actualProgress;
+      }
+
+      return 100;
+    },
+
+    getOverDueUsedPercentLabel(actualProgress) {
+      if (actualProgress <= 100) {
+        return actualProgress + "%";
+      }
+
+      return "";
     },
   },
 

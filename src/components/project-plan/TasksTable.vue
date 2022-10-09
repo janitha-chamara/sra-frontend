@@ -24,12 +24,12 @@
         <div class="flex flex-col w-full">
           <div class="flex w-full">
             <q-chip
-              class="w-1/5 p-4"
+              class="w-1/5 p-4 truncate"
               square
               color="primary"
               text-color="white"
               icon="event"
-              >Job No: {{ job.job_no }}</q-chip
+              ><span class="truncate">Job Name:{{ job.jobName }}</span></q-chip
             >
             <q-chip
               class="w-1/5 p-4"
@@ -37,7 +37,9 @@
               color="primary"
               text-color="white"
               icon="event"
-              >Job Name:{{ job.business_unit }}</q-chip
+              ><span class="truncate"
+                >Client: {{ job.clientName }}</span
+              ></q-chip
             >
             <q-chip
               class="w-1/5 p-4"
@@ -45,15 +47,9 @@
               color="primary"
               text-color="white"
               icon="event"
-              >Client: {{ job.job_no }}</q-chip
-            >
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="primary"
-              text-color="white"
-              icon="event"
-              >Business Unit: {{ job.job_no }}</q-chip
+              ><span class="truncate"
+                >Status: {{ job.projectStatus }}</span
+              ></q-chip
             >
           </div>
           <div class="flex w-full">
@@ -63,7 +59,14 @@
               color="primary"
               text-color="white"
               icon="event"
-              >Status: {{ job.job_no }}</q-chip
+              ><span class="truncate"
+                >Project Duration:
+                {{
+                  new Date(job.startDate).toLocaleDateString() +
+                  " - " +
+                  new Date(job.dueDate).toLocaleDateString()
+                }}</span
+              ></q-chip
             >
             <q-chip
               class="w-1/5 p-4"
@@ -71,7 +74,9 @@
               color="primary"
               text-color="white"
               icon="event"
-              >Project Duration: {{ job.job_no }}</q-chip
+              ><span class="truncate"
+                >Project Manager: {{ job.projectManger }}</span
+              ></q-chip
             >
             <q-chip
               class="w-1/5 p-4"
@@ -79,15 +84,9 @@
               color="primary"
               text-color="white"
               icon="event"
-              >Project Manager: {{ job.job_no }}</q-chip
-            >
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="primary"
-              text-color="white"
-              icon="event"
-              >Service Delivery Manager: {{ job.job_no }}</q-chip
+              ><span class="truncate"
+                >Service Delivery Manager: {{ job.sdm }}</span
+              ></q-chip
             >
           </div>
         </div>
@@ -96,7 +95,7 @@
       <q-card-section class="q-pt-none">
         <q-table
           class="my-sticky-header-table w-full"
-          :rows="tasks"
+          :rows="tasksForTable"
           :columns="columns"
           row-key="name"
           flat
@@ -107,37 +106,43 @@
             }
           "
         >
-          <template v-slot:body-cell-estimate_to_complete_hours>
-            <q-td align="center">
-              <q-input outlined dense label="Enter est. to complete" />
+          <template v-slot:body-cell-estToComplHours="props">
+            <q-td class="flex space-x-1" align="center" :props="props">
+              <q-input
+                outlined
+                dense
+                type="number"
+                label="Enter est. to complete"
+                :model-value="props.row.estToComplHours"
+                @update:model-value="
+                  processTaskWithCalculations(props.row, $event)
+                "
+              /><q-btn
+                round
+                dense
+                color="primary"
+                icon="save"
+                @click="saveTaskWithUpdatedValues(props.row)"
+              />
             </q-td>
           </template>
           <template v-slot:bottom-row>
             <q-tr :props="props">
               <q-td align="center" class="bg-grey-5 text-bold"> Total </q-td>
               <q-td align="center" class="bg-grey-5">
-                {{ job.quoted_hours }}
+                {{ job.quotedHours }}
               </q-td>
               <q-td align="center" class="bg-grey-5">
-                {{ job.actual_hours }}
+                {{ job.actualHours }}
               </q-td>
               <q-td align="center" class="bg-grey-5">
-                {{ job.percent_used }}
+                {{ job.currentQuotedHoursUsed }}
               </q-td>
               <q-td align="center" class="bg-grey-5">
-                {{ job.estimate_to_complete_hours }}
+                {{ job.estToComplHours }}
               </q-td>
               <q-td align="center" class="bg-grey-5">
-                {{ job.percent_complete }}
-              </q-td>
-              <q-td align="center" class="bg-grey-5">
-                {{ job.difference_percent }}
-              </q-td>
-              <q-td align="center" class="bg-grey-5">
-                {{ job.forecast_hours }}
-              </q-td>
-              <q-td align="center" class="bg-grey-5">
-                {{ job.variance_percent }}
+                {{ job.totalForeCastHours }}
               </q-td>
             </q-tr>
           </template>
@@ -152,6 +157,9 @@
 </template>
 
 <script>
+import Http from "@/services/Http";
+import { useToast } from "vue-toastification";
+
 export default {
   name: "TasksTable",
 
@@ -171,70 +179,89 @@ export default {
     return {
       columns: [
         {
-          name: "task_name",
+          name: "taskName",
           align: "center",
           label: "Task",
-          field: "task_name",
+          field: "taskName",
           sortable: true,
         },
         {
-          name: "quoted_hours",
+          name: "quotedHours",
           align: "center",
           label: "Quoted Hours",
-          field: "quoted_hours",
+          field: "quotedHours",
           sortable: true,
         },
         {
-          name: "actual_hours",
+          name: "actualHours",
           align: "center",
           label: "Actual Hours",
-          field: "actual_hours",
+          field: "actualHours",
           sortable: true,
         },
         {
-          name: "percent_used",
+          name: "percentUsed",
           align: "center",
           label: "Percent Used",
-          field: "percent_used",
+          field: "percentUsed",
           sortable: true,
         },
         {
-          name: "estimate_to_complete_hours",
+          name: "estToComplHours",
           align: "center",
           label: "Est. to Complete",
-          field: "estimate_to_complete_hours",
+          field: "estToComplHours",
           sortable: true,
         },
         {
-          name: "percent_complete",
-          align: "center",
-          label: "Percent Complete",
-          field: "percent_complete",
-          sortable: true,
-        },
-        {
-          name: "difference_percent",
-          align: "center",
-          label: "Difference Percent",
-          field: "difference_percent",
-          sortable: true,
-        },
-        {
-          name: "forecast_hours",
+          name: "totalForecastHours",
           align: "center",
           label: "Forecast Hours",
-          field: "forecast_hours",
-          sortable: true,
-        },
-        {
-          name: "variance_percent",
-          align: "center",
-          label: "Variance Percent",
-          field: "variance_percent",
+          field: "totalForecastHours",
           sortable: true,
         },
       ],
+      tasksForTable: [],
+      taskToBeUpdated: null,
+      toast: useToast(),
     };
+  },
+
+  watch: {
+    tasks: {
+      handler() {
+        this.tasksForTable = [...this.tasks];
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
+
+  methods: {
+    saveTaskWithUpdatedValues(task) {
+      Http.post("Task/UpdateTask", [task])
+        .then(() => {
+          this.toast.success("Task updated successfully");
+        })
+        .catch(() => {
+          this.toast.error("Server error occurred");
+        });
+    },
+
+    processTaskWithCalculations(task, estimateToCompleteHours) {
+      this.tasksForTable = this.tasksForTable.map((originalTask) => {
+        if (originalTask.taskId !== task.taskId) {
+          return { ...originalTask };
+        }
+
+        return {
+          ...task,
+          estToComplHours: parseFloat(estimateToCompleteHours),
+          totalForecastHours:
+            parseFloat(task.actualHours) + parseFloat(estimateToCompleteHours),
+        };
+      });
+    },
   },
 };
 </script>

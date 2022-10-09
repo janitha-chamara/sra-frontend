@@ -15,11 +15,11 @@
         }
       "
     >
-      <template v-slot:body-cell-status="props">
+      <template v-slot:body-cell-projectStatus="props">
         <q-td :props="props">
           <progress-bar
             :progresses="getProgresses(props)"
-            :label="props.row.status"
+            :label="props.row.projectStatus"
           />
         </q-td>
       </template>
@@ -40,101 +40,87 @@ export default {
     return {
       columns: [
         {
-          name: "job",
-          align: "center",
+          name: "jobName",
+          align: "left",
           label: "Job",
-          field: "job_name",
+          field: "jobName",
           sortable: true,
         },
         {
-          name: "business_unit",
-          align: "center",
-          label: "Business Unit",
-          field: "business_unit",
-          sortable: true,
-        },
-        {
-          name: "client",
-          align: "center",
+          name: "clientName",
+          align: "left",
           label: "Client",
-          field: "client",
+          field: "clientName",
           sortable: true,
         },
         {
-          name: "project_manager",
-          align: "center",
+          name: "projectManger",
+          align: "left",
           label: "Project Manager",
-          field: "project_manager",
+          field: "projectManger",
           sortable: true,
         },
         {
           name: "sdm",
-          align: "center",
+          align: "left",
           label: "SDM",
           field: "sdm",
           sortable: true,
         },
         {
-          name: "status",
-          align: "center",
-          label: "Status",
-          field: "status",
+          name: "projectStatus",
+          align: "left",
+          label: "Project Status",
+          field: "projectStatus",
           sortable: true,
         },
         {
-          name: "quoted_hours",
-          align: "center",
+          name: "quotedHours",
+          align: "left",
           label: "Quoted Hours",
-          field: "quoted_hours",
+          field: "quotedHours",
           sortable: true,
         },
         {
-          name: "actual_hours",
-          align: "center",
+          name: "actualHours",
+          align: "left",
           label: "Actual Hours",
-          field: "actual_hours",
+          field: "actualHours",
           sortable: true,
         },
         {
-          name: "percent_used",
-          align: "center",
-          label: "Percent Used",
-          field: "percent_used",
+          name: "currentQuotedHoursUsed",
+          align: "left",
+          label: "Current % of Quoted Hours Used",
+          field: "currentQuotedHoursUsed",
           sortable: true,
         },
         {
-          name: "estimate_to_complete",
-          align: "center",
+          name: "estToComplHours",
+          align: "left",
           label: "Est To Complete",
-          field: "estimate_to_complete_hours",
+          field: "estToComplHours",
           sortable: true,
         },
         {
-          name: "percent_completed",
-          align: "center",
-          label: "Percent Completed",
-          field: "percent_complete",
+          name: "totalForeCastHours",
+          align: "left",
+          label: "Total Forecast Hours",
+          field: "totalForeCastHours",
           sortable: true,
         },
         {
-          name: "difference_percent",
-          align: "center",
-          label: "Difference Percent",
-          field: "difference_percent",
+          name: "currentthroughProject",
+          align: "left",
+          label: "Current % through Project",
+          field: "currentthroughProject",
           sortable: true,
         },
         {
-          name: "forecast_hours",
-          align: "center",
-          label: "Forecast Hours",
-          field: "forecast_hours",
-          sortable: true,
-        },
-        {
-          name: "variance_hours",
-          align: "center",
-          label: "Variance Hours",
-          field: "variance_hours",
+          name: "forecastQuotedHours",
+          align: "left",
+          label: "Forecast % of Quoted Hours to be Used",
+          field: "forecastQuotedHours",
           sortable: true,
         },
       ],
@@ -142,36 +128,88 @@ export default {
   },
   methods: {
     getProgresses(props) {
-      const percentComplete = props.row.percent_complete;
-      const percentUsed = props.row.percent_used;
-      const status = props.row.status;
+      const percentComplete = props.row.currentthroughProject;
+      const percentUsed = props.row.currentQuotedHoursUsed;
+      const status = props.row.projectStatus;
 
       let percentCompleteColor = "";
       let percentUsedColor = "";
 
-      if (status === "Completed" && percentUsed <= 100) {
+      if (
+        status === "Completed" &&
+        percentComplete === 100 &&
+        percentUsed <= 100
+      ) {
         percentUsedColor = "#639438";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
       }
 
-      if ((status === "Completed" || !percentComplete) && percentUsed > 100) {
+      if (
+        status === "Completed" &&
+        percentComplete === 100 &&
+        percentUsed > 100
+      ) {
         percentUsedColor = "#890303";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
       }
 
-      return [
-        {
-          name: "percentUsed",
-          progress: percentUsed,
-          color: percentUsedColor,
-        },
-        {
-          name: "percentComplete",
-          progress: percentComplete,
-          color: percentCompleteColor,
-        },
-      ];
-    },
-    getLabel() {
-      return "30%";
+      if (percentComplete < 100 && percentUsed > 100) {
+        percentUsedColor = "#890303";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
+      }
+
+      if (percentComplete < 100 && percentUsed <= 100) {
+        percentUsedColor = "#639438";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
+      }
     },
   },
 };
