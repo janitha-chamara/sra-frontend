@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Full config:  https://github.com/axios/axios#request-config
 axios.defaults.baseURL =
-  process.env.baseURL || process.env.apiUrl || "http://127.0.0.1:8000/api/";
+  process.env.baseURL || process.env.apiUrl || "https://localhost:7270/api/";
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 axios.defaults.headers.post["Content-Type"] =
   '"application/json; charset=utf-8"';

@@ -6,13 +6,6 @@
         <q-input
           dense
           outlined
-          label="Job NO"
-          class="w-[180px]"
-          v-model="jobNoSearchText"
-        />
-        <q-input
-          dense
-          outlined
           v-model="jobNameSearchText"
           class="w-[180px]"
           label="Job Name"
@@ -23,13 +16,6 @@
           v-model="clientSearchText"
           class="w-[180px]"
           label="Client"
-        />
-        <q-input
-          dense
-          outlined
-          v-model="businessUnitSearchText"
-          class="w-[180px]"
-          label="Business Unit"
         />
         <q-input
           dense
@@ -73,6 +59,7 @@
 import ProjectsTable from "@/components/project-plan/ProjectsTable";
 import Http from "@/services/Http";
 import TasksTable from "@/components/project-plan/TasksTable";
+import { orderBy } from "lodash";
 
 export default {
   name: "ProjectPlan",
@@ -136,19 +123,6 @@ export default {
   },
 
   watch: {
-    jobNoSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          return project.job_name.toString().includes(newValue);
-        }),
-      ];
-    },
     jobNameSearchText(newValue) {
       if (newValue === "") {
         this.projects = [...this.originalProjects];
@@ -158,7 +132,10 @@ export default {
 
       this.projects = [
         ...this.projects.filter((project) => {
-          return project.job_name.toString().includes(newValue);
+          return project.jobName
+            .toString()
+            .toLowerCase()
+            .includes(newValue.toString().toLowerCase());
         }),
       ];
     },
@@ -171,20 +148,10 @@ export default {
 
       this.projects = [
         ...this.projects.filter((project) => {
-          return project.client.toString().includes(newValue);
-        }),
-      ];
-    },
-    businessUnitSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          return project.business_unit.toString().includes(newValue);
+          return project.clientName
+            .toString()
+            .toLowerCase()
+            .includes(newValue.toString().toLowerCase());
         }),
       ];
     },
@@ -197,7 +164,14 @@ export default {
 
       this.projects = [
         ...this.projects.filter((project) => {
-          return project.project_manager.toString().includes(newValue);
+          if (!project.projectManger) {
+            return false;
+          }
+
+          return project.projectManger
+            .toString()
+            .toLowerCase()
+            .includes(newValue.toString().toLowerCase());
         }),
       ];
     },
@@ -210,7 +184,14 @@ export default {
 
       this.projects = [
         ...this.projects.filter((project) => {
-          return project.account_manager.toString().includes(newValue);
+          if (!project.sdm) {
+            return false;
+          }
+
+          return project.sdm
+            .toString()
+            .toLowerCase()
+            .includes(newValue.toString().toLowerCase());
         }),
       ];
     },
@@ -223,7 +204,10 @@ export default {
 
       this.projects = [
         ...this.projects.filter((project) => {
-          return project.status.toString().includes(newValue);
+          return project.projectStatus
+            .toString()
+            .toLowerCase()
+            .includes(newValue.toString().toLowerCase());
         }),
       ];
     },
@@ -233,9 +217,9 @@ export default {
     async fetchJobs() {
       this.isWaiting = true;
 
-      const { data } = await Http.get("jobs");
+      const { data } = await Http.get("Job/GetAllJobs");
 
-      const projectsWithStatusChartOptions = data.data.map((project) => {
+      const projectsWithStatusChartOptions = data.response.map((project) => {
         return {
           ...project,
           chartOptions: {
@@ -295,15 +279,25 @@ export default {
       this.projects = [...projectsWithStatusChartOptions];
       this.originalProjects = [...projectsWithStatusChartOptions];
 
+      const lastWmfUpdateDate = orderBy(
+        projectsWithStatusChartOptions,
+        "wfmLastUpdate",
+        "desc"
+      );
+
+      this.$emit("fetch-jobs", lastWmfUpdateDate[0].wfmLastUpdate);
+
       this.isWaiting = false;
     },
 
     async fetchTasks(jobId) {
       this.isWaiting = true;
 
-      const { data } = await Http.get("tasks", { params: { job_id: jobId } });
+      const { data } = await Http.get("Task/TasksByJobId", {
+        params: { jobId: jobId },
+      });
 
-      this.selectedJobTasks = [...data.data];
+      this.selectedJobTasks = [...data.response];
 
       this.isWaiting = false;
     },
