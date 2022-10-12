@@ -16,7 +16,10 @@
           v-if="progress.name === 'percentComplete'"
           class="absolute -right-4 -top-5"
         >
-          {{ progress.progress }}%
+          <div v-if="!progress">
+            <q-icon name="warning" color="warning" size="4rem" />
+          </div>
+          <div v-else>{{ progress.progress }}%</div>
         </div>
         <div
           v-if="progress.name === 'percentUsed'"

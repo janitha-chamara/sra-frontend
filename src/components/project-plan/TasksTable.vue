@@ -93,6 +93,37 @@
       </q-card-section>
 
       <q-card-section class="q-pt-none">
+        <div class="flex justify-center">
+          <q-table
+            class="my-sticky-header-table w-5/6"
+            :rows="[job]"
+            :columns="summaryTableColumns"
+            row-key="name"
+            title="Project Summary"
+            flat
+            table-header-style="background-color: #ffffff"
+            dense
+            bordered
+            hide-bottom
+            table-style="background-color: #8fd1e3"
+            @row-click="
+              (event, row) => {
+                $emit('row-click', row);
+              }
+            "
+          >
+            <template v-slot:body-cell-projectStatus="props">
+              <q-td :props="props">
+                <progress-bar
+                  :progresses="getProgresses(props)"
+                  :label="props.row.projectStatus"
+                />
+              </q-td>
+            </template>
+          </q-table>
+        </div>
+      </q-card-section>
+      <q-card-section class="q-pt-none">
         <q-table
           class="my-sticky-header-table w-full"
           :rows="tasksForTable"
@@ -117,12 +148,6 @@
                 @update:model-value="
                   processTaskWithCalculations(props.row, $event)
                 "
-              /><q-btn
-                round
-                dense
-                color="primary"
-                icon="save"
-                @click="saveTaskWithUpdatedValues(props.row)"
               />
             </q-td>
           </template>
@@ -149,8 +174,13 @@
         </q-table>
       </q-card-section>
 
-      <q-card-actions align="right">
-        <q-btn flat label="OK" color="primary" v-close-popup />
+      <q-card-actions align="center">
+        <q-btn
+          color="secondary"
+          label="Save"
+          v-close-popup
+          @click="saveTasksWithUpdatedValues"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -159,6 +189,7 @@
 <script>
 import Http from "@/services/Http";
 import { useToast } from "vue-toastification";
+import ProgressBar from "@/components/project-plan/ProgressBar";
 
 export default {
   name: "TasksTable",
@@ -175,49 +206,81 @@ export default {
     },
   },
 
+  components: { ProgressBar },
+
   data() {
     return {
       columns: [
         {
           name: "taskName",
-          align: "center",
+          align: "left",
           label: "Task",
           field: "taskName",
           sortable: true,
         },
         {
           name: "quotedHours",
-          align: "center",
+          align: "left",
           label: "Quoted Hours",
           field: "quotedHours",
           sortable: true,
         },
         {
           name: "actualHours",
-          align: "center",
+          align: "left",
           label: "Actual Hours",
           field: "actualHours",
           sortable: true,
         },
         {
           name: "percentUsed",
-          align: "center",
+          align: "left",
           label: "Percent Used",
           field: "percentUsed",
           sortable: true,
         },
         {
           name: "estToComplHours",
-          align: "center",
+          align: "left",
           label: "Est. to Complete",
           field: "estToComplHours",
           sortable: true,
         },
         {
           name: "totalForecastHours",
-          align: "center",
+          align: "left",
           label: "Forecast Hours",
           field: "totalForecastHours",
+          sortable: true,
+        },
+      ],
+      summaryTableColumns: [
+        {
+          name: "projectStatus",
+          align: "left",
+          label: "Project Status",
+          field: "projectStatus",
+          sortable: true,
+        },
+        {
+          name: "currentQuotedHoursUsed",
+          align: "left",
+          label: "Current % of Quoted Hours Used",
+          field: "currentQuotedHoursUsed",
+          sortable: true,
+        },
+        {
+          name: "currentthroughProject",
+          align: "left",
+          label: "Current % through Project",
+          field: "currentthroughProject",
+          sortable: true,
+        },
+        {
+          name: "forecastQuotedHours",
+          align: "left",
+          label: "Forecast % of Quoted Hours to be Used",
+          field: "forecastQuotedHours",
           sortable: true,
         },
       ],
@@ -238,10 +301,12 @@ export default {
   },
 
   methods: {
-    saveTaskWithUpdatedValues(task) {
-      Http.post("Task/UpdateTask", [task])
+    saveTasksWithUpdatedValues() {
+      Http.post("Task/UpdateTask", this.tasksForTable)
         .then(() => {
           this.toast.success("Task updated successfully");
+
+          this.$emit("update-tasks");
         })
         .catch(() => {
           this.toast.error("Server error occurred");
@@ -261,6 +326,91 @@ export default {
             parseFloat(task.actualHours) + parseFloat(estimateToCompleteHours),
         };
       });
+    },
+
+    getProgresses(props) {
+      const percentComplete = props.row.currentthroughProject;
+      const percentUsed = props.row.currentQuotedHoursUsed;
+      const status = props.row.projectStatus;
+
+      let percentCompleteColor = "";
+      let percentUsedColor = "";
+
+      if (
+        status === "Completed" &&
+        percentComplete === 100 &&
+        percentUsed <= 100
+      ) {
+        percentUsedColor = "#639438";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
+      }
+
+      if (
+        status === "Completed" &&
+        percentComplete === 100 &&
+        percentUsed > 100
+      ) {
+        percentUsedColor = "#890303";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
+      }
+
+      if (percentComplete < 100 && percentUsed > 100) {
+        percentUsedColor = "#890303";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
+      }
+
+      if (percentComplete < 100 && percentUsed <= 100) {
+        percentUsedColor = "#639438";
+
+        return [
+          {
+            name: "percentUsed",
+            progress: percentUsed,
+            color: percentUsedColor,
+          },
+          {
+            name: "percentComplete",
+            progress: percentComplete,
+            color: percentCompleteColor,
+          },
+        ];
+      }
     },
   },
 };

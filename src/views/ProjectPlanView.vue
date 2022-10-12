@@ -51,6 +51,7 @@
       v-model="isOpenTasksModal"
       :tasks="selectedJobTasks"
       :job="selectedJob"
+      @update-tasks="fetchJobs"
     />
   </q-card>
 </template>
