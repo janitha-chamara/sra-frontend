@@ -13,19 +13,28 @@
         class="absolute h-[28px] rounded-l-md"
       >
         <div
-          v-if="progress.name === 'percentComplete'"
+          v-if="
+            progress.name === 'percentComplete' && progress.progress !== null
+          "
           class="absolute -right-4 -top-5"
         >
-          <div v-if="!progress">
-            <q-icon name="warning" color="warning" size="4rem" />
-          </div>
-          <div v-else>{{ progress.progress }}%</div>
+          <div>{{ progress.progress }}%</div>
+        </div>
+        <div
+          v-if="
+            progress.name === 'percentComplete' && progress.progress === null
+          "
+          class="absolute left-[80px]"
+        >
+          <q-icon name="warning" color="warning" size="1.5rem" />
         </div>
         <div
           v-if="progress.name === 'percentUsed'"
-          class="absolute right-1/2 top-1 text-white"
+          class="absolute left-[80px] top-1 text-gray-300"
         >
-          {{ getOverDueUsedPercentLabel(progress.progress) }}
+          <q-badge :style="`background-color: ${progress.color}`">
+            {{ getOverDueUsedPercentLabel(progress.progress) }}
+          </q-badge>
         </div>
       </div>
     </div>
@@ -60,11 +69,12 @@ export default {
     },
 
     getOverDueUsedPercentLabel(actualProgress) {
-      if (actualProgress <= 100) {
-        return actualProgress + "%";
-      }
-
-      return "";
+      return actualProgress + "%";
+      // if (actualProgress <= 100) {
+      //   return actualProgress + "%";
+      // }
+      //
+      // return "";
     },
   },
 

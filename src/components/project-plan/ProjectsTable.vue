@@ -23,6 +23,28 @@
           />
         </q-td>
       </template>
+      <template v-slot:body-cell-currentQuotedHoursUsed="props">
+        <q-td
+          :props="props"
+          class="text-bold"
+          :class="{
+            'text-red': props.row.currentQuotedHoursUsed > 100,
+            'text-green': props.row.currentQuotedHoursUsed <= 100,
+          }"
+        >
+          {{ props.row.currentQuotedHoursUsed }}%
+        </q-td>
+      </template>
+      <template v-slot:body-cell-currentthroughProject="props">
+        <q-td :props="props">
+          <div v-if="props.row.currentthroughProject !== null">
+            {{ props.row.currentthroughProject }}%
+          </div>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-forecastQuotedHours="props">
+        <q-td :props="props"> {{ props.row.forecastQuotedHours }}% </q-td>
+      </template>
     </q-table>
   </div>
 </template>

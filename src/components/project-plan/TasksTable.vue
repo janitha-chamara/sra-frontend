@@ -26,7 +26,7 @@
             <q-chip
               class="w-1/5 p-4 truncate"
               square
-              color="primary"
+              color="blue-5"
               text-color="white"
               icon="event"
               ><span class="truncate">Job Name:{{ job.jobName }}</span></q-chip
@@ -34,7 +34,7 @@
             <q-chip
               class="w-1/5 p-4"
               square
-              color="primary"
+              color="blue-5"
               text-color="white"
               icon="event"
               ><span class="truncate"
@@ -44,7 +44,7 @@
             <q-chip
               class="w-1/5 p-4"
               square
-              color="primary"
+              color="blue-5"
               text-color="white"
               icon="event"
               ><span class="truncate"
@@ -56,7 +56,7 @@
             <q-chip
               class="w-1/5 p-4"
               square
-              color="primary"
+              color="blue-5"
               text-color="white"
               icon="event"
               ><span class="truncate"
@@ -71,7 +71,7 @@
             <q-chip
               class="w-1/5 p-4"
               square
-              color="primary"
+              color="blue-5"
               text-color="white"
               icon="event"
               ><span class="truncate"
@@ -81,7 +81,7 @@
             <q-chip
               class="w-1/5 p-4"
               square
-              color="primary"
+              color="blue-5"
               text-color="white"
               icon="event"
               ><span class="truncate"
@@ -105,7 +105,7 @@
             dense
             bordered
             hide-bottom
-            table-style="background-color: #8fd1e3"
+            table-style="background-color: #87CEFA"
             @row-click="
               (event, row) => {
                 $emit('row-click', row);
@@ -113,11 +113,13 @@
             "
           >
             <template v-slot:body-cell-projectStatus="props">
-              <q-td :props="props">
-                <progress-bar
-                  :progresses="getProgresses(props)"
-                  :label="props.row.projectStatus"
-                />
+              <q-td :props="props" class="w-full">
+                <div class="w-full flex justify-center">
+                  <progress-bar
+                    :progresses="getProgresses(props)"
+                    :label="props.row.projectStatus"
+                  />
+                </div>
               </q-td>
             </template>
           </q-table>
@@ -151,22 +153,37 @@
               />
             </q-td>
           </template>
+          <template v-slot:body-cell-totalForecastHours="props">
+            <q-td :props="props">
+              <div
+                v-if="
+                  props.row.estToComplHours !== null &&
+                  !isNaN(props.row.totalForecastHours)
+                "
+              >
+                {{ props.row.totalForecastHours }}
+              </div>
+              <div v-else>
+                <q-icon name="warning" color="warning" size="1.5rem" />
+              </div>
+            </q-td>
+          </template>
           <template v-slot:bottom-row>
             <q-tr :props="props">
-              <q-td align="center" class="bg-grey-5 text-bold"> Total </q-td>
-              <q-td align="center" class="bg-grey-5">
+              <q-td align="left" class="bg-grey-5 text-bold"> Total </q-td>
+              <q-td align="left" class="bg-grey-5">
                 {{ job.quotedHours }}
               </q-td>
-              <q-td align="center" class="bg-grey-5">
+              <q-td align="left" class="bg-grey-5">
                 {{ job.actualHours }}
               </q-td>
-              <q-td align="center" class="bg-grey-5">
+              <q-td align="left" class="bg-grey-5">
                 {{ job.currentQuotedHoursUsed }}
               </q-td>
-              <q-td align="center" class="bg-grey-5">
+              <q-td align="left" class="bg-grey-5">
                 {{ job.estToComplHours }}
               </q-td>
-              <q-td align="center" class="bg-grey-5">
+              <q-td align="left" class="bg-grey-5">
                 {{ job.totalForeCastHours }}
               </q-td>
             </q-tr>
@@ -257,28 +274,28 @@ export default {
       summaryTableColumns: [
         {
           name: "projectStatus",
-          align: "left",
+          align: "center",
           label: "Project Status",
           field: "projectStatus",
           sortable: true,
         },
         {
           name: "currentQuotedHoursUsed",
-          align: "left",
+          align: "center",
           label: "Current % of Quoted Hours Used",
           field: "currentQuotedHoursUsed",
           sortable: true,
         },
         {
           name: "currentthroughProject",
-          align: "left",
+          align: "center",
           label: "Current % through Project",
           field: "currentthroughProject",
           sortable: true,
         },
         {
           name: "forecastQuotedHours",
-          align: "left",
+          align: "center",
           label: "Forecast % of Quoted Hours to be Used",
           field: "forecastQuotedHours",
           sortable: true,
@@ -322,10 +339,20 @@ export default {
         return {
           ...task,
           estToComplHours: parseFloat(estimateToCompleteHours),
-          totalForecastHours:
-            parseFloat(task.actualHours) + parseFloat(estimateToCompleteHours),
+          totalForecastHours: this.getCalculatedForecastHours(
+            task,
+            parseFloat(estimateToCompleteHours)
+          ),
         };
       });
+    },
+
+    getCalculatedForecastHours(task, estimateToCompleteHours) {
+      if (task.actualHours === 0 || task.actualHours === null) {
+        return estimateToCompleteHours;
+      }
+
+      return parseFloat(task.actualHours) + estimateToCompleteHours;
     },
 
     getProgresses(props) {
