@@ -37,13 +37,27 @@
       </template>
       <template v-slot:body-cell-currentthroughProject="props">
         <q-td :props="props">
-          <div v-if="props.row.currentthroughProject !== null">
+          <div v-if="props.row.isTaskComplete">
             {{ props.row.currentthroughProject }}%
           </div>
+          <q-icon v-else name="warning" color="warning" size="1.5rem" />
+        </q-td>
+      </template>
+      <template v-slot:body-cell-totalForeCastHours="props">
+        <q-td :props="props">
+          <div v-if="props.row.isTaskComplete">
+            {{ props.row.totalForeCastHours }}
+          </div>
+          <q-icon v-else name="warning" color="warning" size="1.5rem" />
         </q-td>
       </template>
       <template v-slot:body-cell-forecastQuotedHours="props">
-        <q-td :props="props"> {{ props.row.forecastQuotedHours }}% </q-td>
+        <q-td :props="props">
+          <div v-if="props.row.isTaskComplete">
+            {{ props.row.forecastQuotedHours }}%
+          </div>
+          <q-icon v-else name="warning" color="warning" size="1.5rem"
+        /></q-td>
       </template>
     </q-table>
   </div>
