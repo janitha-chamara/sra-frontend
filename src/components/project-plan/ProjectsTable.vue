@@ -9,12 +9,18 @@
       row-key="name"
       flat
       bordered
+      v-model:pagination="pagination"
       @row-click="
         (event, row) => {
           $emit('row-click', row);
         }
       "
     >
+      <template v-slot:body-cell-jobName="props">
+        <q-td :props="props">
+          {{ props.row.jobName }}
+        </q-td>
+      </template>
       <template v-slot:body-cell-projectStatus="props">
         <q-td :props="props">
           <progress-bar
@@ -59,6 +65,49 @@
           <q-icon v-else name="warning" color="warning" size="1.5rem"
         /></q-td>
       </template>
+      <template v-slot:pagination="scope">
+        <q-btn
+          v-if="scope.pagesNumber > 2"
+          icon="first_page"
+          color="grey-8"
+          round
+          dense
+          flat
+          :disable="scope.isFirstPage"
+          @click="scope.firstPage"
+        />
+
+        <q-btn
+          icon="chevron_left"
+          color="grey-8"
+          round
+          dense
+          flat
+          :disable="scope.isFirstPage"
+          @click="scope.prevPage"
+        />
+
+        <q-btn
+          icon="chevron_right"
+          color="grey-8"
+          round
+          dense
+          flat
+          :disable="scope.isLastPage"
+          @click="scope.nextPage"
+        />
+
+        <q-btn
+          v-if="scope.pagesNumber > 2"
+          icon="last_page"
+          color="grey-8"
+          round
+          dense
+          flat
+          :disable="scope.isLastPage"
+          @click="scope.lastPage"
+        />
+      </template>
     </q-table>
   </div>
 </template>
@@ -74,6 +123,13 @@ export default {
   },
   data() {
     return {
+      pagination: {
+        sortBy: "desc",
+        descending: false,
+        page: 1,
+        rowsPerPage: 5,
+        // rowsNumber: xx if getting data from a server
+      },
       columns: [
         {
           name: "jobName",
@@ -81,6 +137,10 @@ export default {
           label: "Job",
           field: "jobName",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "clientName",
@@ -88,6 +148,10 @@ export default {
           label: "Client",
           field: "clientName",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "projectManger",
@@ -95,6 +159,10 @@ export default {
           label: "Project Manager",
           field: "projectManger",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "sdm",
@@ -102,6 +170,10 @@ export default {
           label: "SDM",
           field: "sdm",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "projectStatus",
@@ -109,6 +181,10 @@ export default {
           label: "Project Status",
           field: "projectStatus",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 250px",
+          headerClasses: "bg-primary text-white",
+          headerStyle: "max-width: 250px",
         },
         {
           name: "quotedHours",
@@ -116,6 +192,10 @@ export default {
           label: "Quoted Hours",
           field: "quotedHours",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "actualHours",
@@ -123,6 +203,10 @@ export default {
           label: "Actual Hours",
           field: "actualHours",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "currentQuotedHoursUsed",
@@ -130,6 +214,10 @@ export default {
           label: "Current % of Quoted Hours Used",
           field: "currentQuotedHoursUsed",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 100px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 100px",
         },
         {
           name: "estToComplHours",
@@ -137,6 +225,10 @@ export default {
           label: "Est To Complete",
           field: "estToComplHours",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 200px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 200px",
         },
         {
           name: "totalForeCastHours",
@@ -144,6 +236,10 @@ export default {
           label: "Total Forecast Hours",
           field: "totalForeCastHours",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 100px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 100px",
         },
         {
           name: "currentthroughProject",
@@ -151,6 +247,10 @@ export default {
           label: "Current % through Project",
           field: "currentthroughProject",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 100px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 100px",
         },
         {
           name: "forecastQuotedHours",
@@ -158,10 +258,21 @@ export default {
           label: "Forecast % of Quoted Hours to be Used",
           field: "forecastQuotedHours",
           sortable: true,
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 100px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 100px",
         },
       ],
     };
   },
+
+  computed: {
+    pagesNumber() {
+      return Math.ceil(this.rows.length / this.pagination.value.rowsPerPage);
+    },
+  },
+
   methods: {
     getProgresses(props) {
       const percentComplete = props.row.currentthroughProject;
