@@ -175,10 +175,9 @@
                 {{ totalQuotedHours }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ totalActualHours }}
-              </q-td>
-              <q-td align="left" class="bg-grey-5">
-                {{ totalCurrentQuotedHoursUsed }}
+                {{ totalActualHours }} </q-td
+              ><q-td align="left" class="bg-grey-5">
+                {{ totalPercentUsed }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
                 {{ totalEstToComplHours }}
@@ -310,21 +309,34 @@ export default {
 
   computed: {
     totalQuotedHours() {
-      return sumBy(this.tasksForTable.map((task) => task.totalQuotedHours));
+      return sumBy(this.tasksForTable.map((task) => task.quotedHours))?.toFixed(
+        2
+      );
     },
     totalActualHours() {
-      return sumBy(this.tasksForTable.map((task) => task.totalActualHours));
+      return sumBy(this.tasksForTable.map((task) => task.actualHours))?.toFixed(
+        2
+      );
+    },
+    totalPercentUsed() {
+      return sumBy(this.tasksForTable.map((task) => task.percentUsed))?.toFixed(
+        2
+      );
     },
     totalCurrentQuotedHoursUsed() {
       return sumBy(
-        this.tasksForTable.map((task) => task.totalCurrentQuotedHoursUsed)
-      );
+        this.tasksForTable.map((task) => task.currentQuotedHoursUsed)
+      )?.toFixed(2);
     },
     totalEstToComplHours() {
-      return sumBy(this.tasksForTable.map((task) => task.totalEstToComplHours));
+      return sumBy(
+        this.tasksForTable.map((task) => task.estToComplHours)
+      )?.toFixed(2);
     },
     grandTotalForeCastHours() {
-      return sumBy(this.tasksForTable.map((task) => task.totalForeCastHours));
+      return sumBy(
+        this.tasksForTable.map((task) => task.totalForecastHours)
+      )?.toFixed(2);
     },
   },
 
