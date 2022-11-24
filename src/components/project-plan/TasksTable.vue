@@ -158,7 +158,7 @@
               <div
                 v-if="
                   props.row.estToComplHours !== null &&
-                  !isNaN(props.row.totalForecastHours)
+                  !isNaN(props.row.estToComplHours)
                 "
               >
                 {{ props.row.totalForecastHours }}
@@ -172,19 +172,19 @@
             <q-tr :props="props">
               <q-td align="left" class="bg-grey-5 text-bold"> Total </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ job.quotedHours }}
+                {{ totalQuotedHours }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ job.actualHours }}
+                {{ totalActualHours }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ job.currentQuotedHoursUsed }}
+                {{ totalCurrentQuotedHoursUsed }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ job.estToComplHours }}
+                {{ totalEstToComplHours }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ job.totalForeCastHours }}
+                {{ grandTotalForeCastHours }}
               </q-td>
             </q-tr>
           </template>
@@ -206,6 +206,7 @@
 <script>
 import Http from "@/services/Http";
 import { useToast } from "vue-toastification";
+import { sumBy } from "lodash";
 import ProgressBar from "@/components/project-plan/ProgressBar";
 
 export default {
@@ -305,6 +306,26 @@ export default {
       taskToBeUpdated: null,
       toast: useToast(),
     };
+  },
+
+  computed: {
+    totalQuotedHours() {
+      return sumBy(this.tasksForTable.map((task) => task.totalQuotedHours));
+    },
+    totalActualHours() {
+      return sumBy(this.tasksForTable.map((task) => task.totalActualHours));
+    },
+    totalCurrentQuotedHoursUsed() {
+      return sumBy(
+        this.tasksForTable.map((task) => task.totalCurrentQuotedHoursUsed)
+      );
+    },
+    totalEstToComplHours() {
+      return sumBy(this.tasksForTable.map((task) => task.totalEstToComplHours));
+    },
+    grandTotalForeCastHours() {
+      return sumBy(this.tasksForTable.map((task) => task.totalForeCastHours));
+    },
   },
 
   watch: {
