@@ -280,6 +280,15 @@ export default {
       this.projects = [...projectsWithStatusChartOptions];
       this.originalProjects = [...projectsWithStatusChartOptions];
 
+      this.jobNoSearchText = this.jobNoSearchText.toString();
+      this.jobNameSearchText = this.jobNameSearchText.toString();
+      this.clientSearchText = this.clientSearchText.toString();
+      this.businessUnitSearchText = this.businessUnitSearchText.toString();
+      this.projectManagerSearchText = this.projectManagerSearchText.toString();
+      this.serviceDeliveryManagerSearchText =
+        this.serviceDeliveryManagerSearchText.toString();
+      this.statusSearchText = this.statusSearchText.toString();
+
       const lastWmfUpdateDate = orderBy(
         projectsWithStatusChartOptions,
         "wfmLastUpdate",

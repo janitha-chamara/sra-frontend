@@ -144,8 +144,8 @@
               <q-input
                 outlined
                 dense
+                placeholder="Enter est. to complete"
                 type="number"
-                label="Enter est. to complete"
                 :model-value="props.row.estToComplHours"
                 @update:model-value="
                   processTaskWithCalculations(props.row, $event)
@@ -155,12 +155,7 @@
           </template>
           <template v-slot:body-cell-totalForecastHours="props">
             <q-td :props="props">
-              <div
-                v-if="
-                  props.row.estToComplHours !== null &&
-                  !isNaN(props.row.estToComplHours)
-                "
-              >
+              <div v-if="props.row.totalForecastHours !== null">
                 {{ props.row.totalForecastHours }}
               </div>
               <div v-else>
