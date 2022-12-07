@@ -96,7 +96,7 @@
         <div class="flex justify-center">
           <q-table
             class="my-sticky-header-table w-5/6"
-            :rows="[job]"
+            :rows="[jobForSummaryTable]"
             :columns="summaryTableColumns"
             row-key="name"
             title="Project Summary"
@@ -122,6 +122,22 @@
                 </div>
               </q-td>
             </template>
+            <template v-slot:body-cell-totalHours="props">
+              <q-td :props="props">
+                <div
+                  v-if="
+                    !isNaN(parseFloat(props.row.totalHours)) &&
+                    grandTotalForeCastHours !== null &&
+                    !isNaN(parseFloat(grandTotalForeCastHours))
+                  "
+                >
+                  {{ props.row.totalHours }}
+                </div>
+                <div v-else>
+                  <q-icon name="warning" color="warning" size="1.5rem" />
+                </div>
+              </q-td>
+            </template>
           </q-table>
         </div>
       </q-card-section>
@@ -133,6 +149,7 @@
           row-key="name"
           flat
           bordered
+          :pagination="initialPagination"
           @row-click="
             (event, row) => {
               $emit('row-click', row);
@@ -155,7 +172,12 @@
           </template>
           <template v-slot:body-cell-totalForecastHours="props">
             <q-td :props="props">
-              <div v-if="props.row.totalForecastHours !== null">
+              <div
+                v-if="
+                  props.row.totalForecastHours !== null &&
+                  !isNaN(parseFloat(props.row.totalForecastHours))
+                "
+              >
                 {{ props.row.totalForecastHours }}
               </div>
               <div v-else>
@@ -175,10 +197,31 @@
                 {{ totalPercentUsed }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ totalEstToComplHours }}
+                <div
+                  v-if="
+                    !isNaN(parseFloat(totalEstToComplHours)) &&
+                    grandTotalForeCastHours !== null &&
+                    !isNaN(parseFloat(grandTotalForeCastHours))
+                  "
+                >
+                  {{ totalEstToComplHours }}
+                </div>
+                <div v-else>
+                  <q-icon name="warning" color="warning" size="1.5rem" />
+                </div>
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                {{ grandTotalForeCastHours }}
+                <div
+                  v-if="
+                    grandTotalForeCastHours !== null &&
+                    !isNaN(parseFloat(grandTotalForeCastHours))
+                  "
+                >
+                  {{ grandTotalForeCastHours }}
+                </div>
+                <div v-else>
+                  <q-icon name="warning" color="warning" size="1.5rem" />
+                </div>
               </q-td>
             </q-tr>
           </template>
@@ -222,6 +265,10 @@ export default {
 
   data() {
     return {
+      initialPagination: {
+        rowsPerPage: null,
+      },
+
       columns: [
         {
           name: "taskName",
@@ -295,6 +342,13 @@ export default {
           field: "forecastQuotedHours",
           sortable: true,
         },
+        {
+          name: "totalHours",
+          align: "center",
+          label: "Total hours",
+          field: "totalHours",
+          sortable: true,
+        },
       ],
       tasksForTable: [],
       taskToBeUpdated: null,
@@ -329,9 +383,29 @@ export default {
       )?.toFixed(2);
     },
     grandTotalForeCastHours() {
+      if (
+        this.tasksForTable.some((task) => {
+          return task.totalForecastHours === null;
+        })
+      ) {
+        return null;
+      }
+
       return sumBy(
         this.tasksForTable.map((task) => task.totalForecastHours)
       )?.toFixed(2);
+    },
+    jobForSummaryTable() {
+      return {
+        ...this.job,
+        totalHours: sumBy(this.tasksForTable, (task) => {
+          if (task.estToComplHours === null && task.actualHours === null) {
+            return task.quotedHours;
+          }
+
+          return task.estToComplHours;
+        }),
+      };
     },
   },
 

@@ -16,6 +16,34 @@
         }
       "
     >
+      <template v-slot:header-cell-currentQuotedHoursUsed="props">
+        <q-th :props="props">
+          <div>Current % of</div>
+          <div>Quoted Hours</div>
+          <div>Used</div>
+        </q-th>
+      </template>
+      <template v-slot:header-cell-totalForeCastHours="props">
+        <q-th :props="props">
+          <div>Total</div>
+          <div>Forecast</div>
+          <div>Hours</div>
+        </q-th>
+      </template>
+      <template v-slot:header-cell-currentthroughProject="props">
+        <q-th :props="props">
+          <div>Current % of</div>
+          <div>through</div>
+          <div>Project</div>
+        </q-th>
+      </template>
+      <template v-slot:header-cell-forecastQuotedHours="props">
+        <q-th :props="props">
+          <div>Forecast % of</div>
+          <div>Quoted Hours</div>
+          <div>to be Used</div>
+        </q-th>
+      </template>
       <template v-slot:body-cell-jobName="props">
         <q-td :props="props">
           {{ props.row.jobName }}
@@ -127,7 +155,7 @@ export default {
         sortBy: "desc",
         descending: false,
         page: 1,
-        rowsPerPage: 5,
+        rowsPerPage: null,
         // rowsNumber: xx if getting data from a server
       },
       columns: [
@@ -213,9 +241,8 @@ export default {
           align: "left",
           label: "Current % of Quoted Hours Used",
           field: "currentQuotedHoursUsed",
-          sortable: true,
           classes: "bg-grey-2 ellipsis",
-          style: "max-width: 100px",
+          style: "max-width: 200px",
           headerClasses: "bg-primary text-white ellipsis",
           headerStyle: "max-width: 100px",
         },
@@ -235,7 +262,6 @@ export default {
           align: "left",
           label: "Total Forecast Hours",
           field: "totalForeCastHours",
-          sortable: true,
           classes: "bg-grey-2 ellipsis",
           style: "max-width: 100px",
           headerClasses: "bg-primary text-white ellipsis",
@@ -246,7 +272,6 @@ export default {
           align: "left",
           label: "Current % through Project",
           field: "currentthroughProject",
-          sortable: true,
           classes: "bg-grey-2 ellipsis",
           style: "max-width: 100px",
           headerClasses: "bg-primary text-white ellipsis",
@@ -257,7 +282,6 @@ export default {
           align: "left",
           label: "Forecast % of Quoted Hours to be Used",
           field: "forecastQuotedHours",
-          sortable: true,
           classes: "bg-grey-2 ellipsis",
           style: "max-width: 100px",
           headerClasses: "bg-primary text-white ellipsis",
