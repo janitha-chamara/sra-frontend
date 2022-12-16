@@ -197,18 +197,7 @@
                 {{ totalPercentUsed }}
               </q-td>
               <q-td align="left" class="bg-grey-5">
-                <div
-                  v-if="
-                    !isNaN(parseFloat(totalEstToComplHours)) &&
-                    grandTotalForeCastHours !== null &&
-                    !isNaN(parseFloat(grandTotalForeCastHours))
-                  "
-                >
-                  {{ totalEstToComplHours }}
-                </div>
-                <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
-                </div>
+                <div></div>
               </q-td>
               <q-td align="left" class="bg-grey-5">
                 <div
@@ -345,7 +334,7 @@ export default {
         {
           name: "totalHours",
           align: "center",
-          label: "Total hours",
+          label: "Total Est. Hours to Completion",
           field: "totalHours",
           sortable: true,
         },
