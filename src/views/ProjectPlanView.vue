@@ -31,13 +31,6 @@
           class="w-[180px]"
           label="Service Delivery Manager"
         />
-        <q-input
-          dense
-          outlined
-          v-model="statusSearchText"
-          class="w-[180px]"
-          label="Status"
-        />
       </div>
     </q-card-section>
     <q-card-section>
@@ -45,6 +38,7 @@
         :rows="projects"
         :is-waiting="isWaiting"
         @row-click="handleClickProjectsTableRow"
+        @update-is-lock="fetchJobs"
       />
     </q-card-section>
     <tasks-table

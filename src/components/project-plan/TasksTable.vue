@@ -113,12 +113,54 @@
             "
           >
             <template v-slot:body-cell-projectStatus="props">
-              <q-td :props="props" class="w-full">
-                <div class="w-full flex justify-center">
+              <q-td :props="props">
+                <div
+                  class="w-full flex justify-center"
+                  v-if="
+                    !isNaN(parseFloat(props.row.totalHours)) &&
+                    grandTotalForeCastHours !== null &&
+                    !isNaN(parseFloat(grandTotalForeCastHours))
+                  "
+                >
                   <progress-bar
                     :progresses="getProgresses(props)"
                     :label="props.row.projectStatus"
                   />
+                </div>
+                <div v-else>
+                  <q-icon name="warning" color="warning" size="1.5rem" />
+                </div>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-currentthroughProject="props">
+              <q-td :props="props">
+                <div
+                  v-if="
+                    !isNaN(parseFloat(props.row.totalHours)) &&
+                    grandTotalForeCastHours !== null &&
+                    !isNaN(parseFloat(grandTotalForeCastHours))
+                  "
+                >
+                  {{ props.row.currentthroughProject }}
+                </div>
+                <div v-else>
+                  <q-icon name="warning" color="warning" size="1.5rem" />
+                </div>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-currentQuotedHoursUsed="props">
+              <q-td :props="props">
+                <div
+                  v-if="
+                    !isNaN(parseFloat(props.row.totalHours)) &&
+                    grandTotalForeCastHours !== null &&
+                    !isNaN(parseFloat(grandTotalForeCastHours))
+                  "
+                >
+                  {{ props.row.currentQuotedHoursUsed }}
+                </div>
+                <div v-else>
+                  <q-icon name="warning" color="warning" size="1.5rem" />
                 </div>
               </q-td>
             </template>

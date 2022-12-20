@@ -16,6 +16,13 @@
         }
       "
     >
+      <template v-slot:header-cell-estToComplHours="props">
+        <q-th :props="props">
+          <div>Estimate</div>
+          <div>To</div>
+          <div>Complete</div>
+        </q-th>
+      </template>
       <template v-slot:header-cell-currentQuotedHoursUsed="props">
         <q-th :props="props">
           <div>Current % of</div>
@@ -49,12 +56,22 @@
           {{ props.row.jobName }}
         </q-td>
       </template>
+      <template v-slot:body-cell-estToComplHours="props">
+        <q-td :props="props">
+          <div v-if="props.row.isTaskComplete">
+            {{ props.row.estToComplHours }}%
+          </div>
+          <q-icon v-else name="warning" color="warning" size="1.5rem" />
+        </q-td>
+      </template>
       <template v-slot:body-cell-projectStatus="props">
         <q-td :props="props">
           <progress-bar
+            v-if="props.row.isTaskComplete"
             :progresses="getProgresses(props)"
             :label="props.row.projectStatus"
           />
+          <q-icon v-else name="warning" color="warning" size="1.5rem" />
         </q-td>
       </template>
       <template v-slot:body-cell-currentQuotedHoursUsed="props">
@@ -92,6 +109,15 @@
           </div>
           <q-icon v-else name="warning" color="warning" size="1.5rem"
         /></q-td>
+      </template>
+      <template v-slot:body-cell-isLock="props">
+        <q-td :props="props">
+          <q-toggle
+            :model-value="!!props.row.isLock"
+            color="green"
+            @update:model-value="handleClickIsLock($event, props.row)"
+          />
+        </q-td>
       </template>
       <template v-slot:pagination="scope">
         <q-btn
@@ -142,6 +168,7 @@
 
 <script>
 import ProgressBar from "@/components/project-plan/ProgressBar";
+import Http from "@/services/Http";
 export default {
   name: "ProjectsTable",
   components: { ProgressBar },
@@ -251,7 +278,7 @@ export default {
           align: "left",
           label: "Est To Complete",
           field: "estToComplHours",
-          sortable: true,
+          sortable: false,
           classes: "bg-grey-2 ellipsis",
           style: "max-width: 200px",
           headerClasses: "bg-primary text-white ellipsis",
@@ -287,6 +314,16 @@ export default {
           headerClasses: "bg-primary text-white ellipsis",
           headerStyle: "max-width: 100px",
         },
+        {
+          name: "isLock",
+          align: "left",
+          label: "Is Lock",
+          field: "isLock",
+          classes: "bg-grey-2 ellipsis",
+          style: "max-width: 100px",
+          headerClasses: "bg-primary text-white ellipsis",
+          headerStyle: "max-width: 100px",
+        },
       ],
     };
   },
@@ -298,6 +335,15 @@ export default {
   },
 
   methods: {
+    async handleClickIsLock(toggleValue, job) {
+      await Http.post("Job/UpdateIsLock", {
+        ...job,
+        isLock: toggleValue,
+      });
+
+      this.$emit("update-is-lock");
+    },
+
     getProgresses(props) {
       const percentComplete = props.row.currentthroughProject;
       const percentUsed = props.row.currentQuotedHoursUsed;
