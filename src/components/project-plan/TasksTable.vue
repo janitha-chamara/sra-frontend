@@ -180,6 +180,13 @@
                 </div>
               </q-td>
             </template>
+            <template v-slot:body-cell-isLock>
+              <q-toggle
+                :model-value="!!job.isLock"
+                color="green"
+                @update:model-value="handleClickIsLock($event, job)"
+              />
+            </template>
           </q-table>
         </div>
       </q-card-section>
@@ -274,7 +281,7 @@
 <script>
 import Http from "@/services/Http";
 import { useToast } from "vue-toastification";
-import { sumBy } from "lodash";
+import { cloneDeep, sumBy } from "lodash";
 import ProgressBar from "@/components/project-plan/ProgressBar";
 
 export default {
@@ -380,6 +387,12 @@ export default {
           field: "totalHours",
           sortable: true,
         },
+        {
+          name: "isLock",
+          align: "totalHours",
+          label: "Is Lock",
+          field: "isLock",
+        },
       ],
       tasksForTable: [],
       taskToBeUpdated: null,
@@ -443,7 +456,7 @@ export default {
   watch: {
     tasks: {
       handler() {
-        this.tasksForTable = [...this.tasks];
+        this.tasksForTable = this.tasks.map((task) => cloneDeep(task));
       },
       immediate: true,
       deep: true,
@@ -451,6 +464,15 @@ export default {
   },
 
   methods: {
+    async handleClickIsLock(toggleValue, job) {
+      await Http.post("Job/UpdateIsLock", {
+        ...job,
+        isLock: toggleValue,
+      });
+
+      this.$emit("update-is-lock");
+    },
+
     saveTasksWithUpdatedValues() {
       Http.post("Task/UpdateTask", this.tasksForTable)
         .then(() => {
@@ -471,11 +493,17 @@ export default {
 
         return {
           ...task,
-          estToComplHours: parseFloat(estimateToCompleteHours),
-          totalForecastHours: this.getCalculatedForecastHours(
-            task,
-            parseFloat(estimateToCompleteHours)
-          ),
+          estToComplHours: isNaN(parseFloat(estimateToCompleteHours))
+            ? this.tasks.find((rawTask) => rawTask.taskId === task.taskId)
+                .estToComplHours
+            : parseFloat(estimateToCompleteHours),
+          totalForecastHours: isNaN(parseFloat(estimateToCompleteHours))
+            ? this.tasks.find((rawTask) => rawTask.taskId === task.taskId)
+                .totalForecastHours
+            : this.getCalculatedForecastHours(
+                task,
+                parseFloat(estimateToCompleteHours)
+              ),
         };
       });
     },

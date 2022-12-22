@@ -59,7 +59,7 @@
       <template v-slot:body-cell-estToComplHours="props">
         <q-td :props="props">
           <div v-if="props.row.isTaskComplete">
-            {{ props.row.estToComplHours }}%
+            {{ props.row.estToComplHours }}
           </div>
           <q-icon v-else name="warning" color="warning" size="1.5rem" />
         </q-td>
@@ -112,11 +112,7 @@
       </template>
       <template v-slot:body-cell-isLock="props">
         <q-td :props="props">
-          <q-toggle
-            :model-value="!!props.row.isLock"
-            color="green"
-            @update:model-value="handleClickIsLock($event, props.row)"
-          />
+          {{ getWmfLastUpdate(props.row.wmfLastUpdateDate) }}
         </q-td>
       </template>
       <template v-slot:pagination="scope">
@@ -168,6 +164,7 @@
 
 <script>
 import ProgressBar from "@/components/project-plan/ProgressBar";
+import moment from "moment";
 import Http from "@/services/Http";
 export default {
   name: "ProjectsTable",
@@ -335,6 +332,10 @@ export default {
   },
 
   methods: {
+    getWmfLastUpdate(wmfLastUpdate) {
+      return moment(wmfLastUpdate).format("D-MM-YY / hh:mm");
+    },
+
     async handleClickIsLock(toggleValue, job) {
       await Http.post("Job/UpdateIsLock", {
         ...job,
@@ -347,17 +348,16 @@ export default {
     getProgresses(props) {
       const percentComplete = props.row.currentthroughProject;
       const percentUsed = props.row.currentQuotedHoursUsed;
-      const status = props.row.projectStatus;
+      // const status = props.row.projectStatus;
 
       let percentCompleteColor = "";
       let percentUsedColor = "";
 
       if (
-        status === "Completed" &&
-        percentComplete === 100 &&
-        percentUsed <= 100
+        percentUsed - percentComplete > 0 &&
+        percentUsed - percentComplete <= 5
       ) {
-        percentUsedColor = "#639438";
+        percentUsedColor = "#f8a018";
 
         return [
           {
@@ -373,11 +373,7 @@ export default {
         ];
       }
 
-      if (
-        status === "Completed" &&
-        percentComplete === 100 &&
-        percentUsed > 100
-      ) {
+      if (percentUsed > percentComplete) {
         percentUsedColor = "#890303";
 
         return [
@@ -394,24 +390,7 @@ export default {
         ];
       }
 
-      if (percentComplete < 100 && percentUsed > 100) {
-        percentUsedColor = "#890303";
-
-        return [
-          {
-            name: "percentUsed",
-            progress: percentUsed,
-            color: percentUsedColor,
-          },
-          {
-            name: "percentComplete",
-            progress: percentComplete,
-            color: percentCompleteColor,
-          },
-        ];
-      }
-
-      if (percentComplete < 100 && percentUsed <= 100) {
+      if (percentUsed < percentComplete) {
         percentUsedColor = "#639438";
 
         return [
@@ -427,6 +406,82 @@ export default {
           },
         ];
       }
+
+      // if (
+      //   status === "Completed" &&
+      //   percentComplete === 100 &&
+      //   percentUsed <= 100
+      // ) {
+      //   percentUsedColor = "#639438";
+      //
+      //   return [
+      //     {
+      //       name: "percentUsed",
+      //       progress: percentUsed,
+      //       color: percentUsedColor,
+      //     },
+      //     {
+      //       name: "percentComplete",
+      //       progress: percentComplete,
+      //       color: percentCompleteColor,
+      //     },
+      //   ];
+      // }
+      //
+      // if (
+      //   status === "Completed" &&
+      //   percentComplete === 100 &&
+      //   percentUsed > 100
+      // ) {
+      //   percentUsedColor = "#890303";
+      //
+      //   return [
+      //     {
+      //       name: "percentUsed",
+      //       progress: percentUsed,
+      //       color: percentUsedColor,
+      //     },
+      //     {
+      //       name: "percentComplete",
+      //       progress: percentComplete,
+      //       color: percentCompleteColor,
+      //     },
+      //   ];
+      // }
+      //
+      // if (percentComplete < 100 && percentUsed > 100) {
+      //   percentUsedColor = "#890303";
+      //
+      //   return [
+      //     {
+      //       name: "percentUsed",
+      //       progress: percentUsed,
+      //       color: percentUsedColor,
+      //     },
+      //     {
+      //       name: "percentComplete",
+      //       progress: percentComplete,
+      //       color: percentCompleteColor,
+      //     },
+      //   ];
+      // }
+      //
+      // if (percentComplete < 100 && percentUsed <= 100) {
+      //   percentUsedColor = "#639438";
+      //
+      //   return [
+      //     {
+      //       name: "percentUsed",
+      //       progress: percentUsed,
+      //       color: percentUsedColor,
+      //     },
+      //     {
+      //       name: "percentComplete",
+      //       progress: percentComplete,
+      //       color: percentCompleteColor,
+      //     },
+      //   ];
+      // }
     },
   },
 };

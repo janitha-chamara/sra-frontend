@@ -46,6 +46,7 @@
       :tasks="selectedJobTasks"
       :job="selectedJob"
       @update-tasks="fetchJobs"
+      @update-is-lock="fetchJobs"
     />
   </q-card>
 </template>
