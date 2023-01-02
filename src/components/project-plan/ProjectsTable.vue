@@ -110,9 +110,9 @@
           <q-icon v-else name="warning" color="warning" size="1.5rem"
         /></q-td>
       </template>
-      <template v-slot:body-cell-isLock="props">
+      <template v-slot:body-cell-wmfLastUpdate="props">
         <q-td :props="props">
-          {{ getWmfLastUpdate(props.row.wmfLastUpdateDate) }}
+          {{ getWmfLastUpdate(props.row.wfmLastUpdate) }}
         </q-td>
       </template>
       <template v-slot:pagination="scope">
@@ -312,10 +312,10 @@ export default {
           headerStyle: "max-width: 100px",
         },
         {
-          name: "isLock",
+          name: "wmfLastUpdate",
           align: "left",
-          label: "Is Lock",
-          field: "isLock",
+          label: "Update Date",
+          field: "wmfLastUpdate",
           classes: "bg-grey-2 ellipsis",
           style: "max-width: 100px",
           headerClasses: "bg-primary text-white ellipsis",
@@ -333,13 +333,12 @@ export default {
 
   methods: {
     getWmfLastUpdate(wmfLastUpdate) {
-      return moment(wmfLastUpdate).format("D-MM-YY / hh:mm");
+      return moment(wmfLastUpdate).format("D-MM-YY");
     },
 
     async handleClickIsLock(toggleValue, job) {
       await Http.post("Job/UpdateIsLock", {
         ...job,
-        isLock: toggleValue,
       });
 
       this.$emit("update-is-lock");

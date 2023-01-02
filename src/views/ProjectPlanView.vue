@@ -290,6 +290,10 @@ export default {
         "desc"
       );
 
+      this.selectedJob = this.projects.find((project) => {
+        return project?.id === this.selectedJob?.id;
+      });
+
       this.$emit("fetch-jobs", lastWmfUpdateDate[0].wfmLastUpdate);
 
       this.isWaiting = false;
