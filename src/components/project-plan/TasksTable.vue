@@ -512,18 +512,33 @@ export default {
           estToComplHours: isNaN(parseFloat(estimateToCompleteHours))
             ? null
             : parseFloat(estimateToCompleteHours),
-          totalForecastHours: isNaN(parseFloat(estimateToCompleteHours))
-            ? this.tasks.find((rawTask) => rawTask.taskId === task.taskId)
-                .totalForecastHours
-            : this.getCalculatedForecastHours(
-                task,
-                parseFloat(estimateToCompleteHours)
-              ),
+          totalForecastHours: this.getCalculatedForecastHours(
+            task,
+            parseFloat(estimateToCompleteHours)
+          ),
         };
       });
     },
 
     getCalculatedForecastHours(task, estimateToCompleteHours) {
+      const originalTask = this.tasks.find(
+        (rawTask) => rawTask.taskId === task.taskId
+      );
+
+      if (
+        isNaN(estimateToCompleteHours) &&
+        originalTask.estToComplHours !== null
+      ) {
+        return null;
+      }
+
+      if (
+        isNaN(estimateToCompleteHours) &&
+        originalTask.estToComplHours === null
+      ) {
+        return originalTask.totalForecastHours;
+      }
+
       if (task.actualHours === 0 || task.actualHours === null) {
         return estimateToCompleteHours;
       }
