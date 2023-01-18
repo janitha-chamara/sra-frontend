@@ -317,9 +317,9 @@ export default {
           label: "Update Date",
           field: "wmfLastUpdate",
           classes: "bg-grey-2 ellipsis",
-          style: "max-width: 100px",
+          style: "max-width: 130px",
           headerClasses: "bg-primary text-white ellipsis",
-          headerStyle: "max-width: 100px",
+          headerStyle: "max-width: 130px",
         },
       ],
     };
@@ -333,7 +333,7 @@ export default {
 
   methods: {
     getWmfLastUpdate(wmfLastUpdate) {
-      return moment(wmfLastUpdate).format("D-MM-YY");
+      return moment(wmfLastUpdate).format("D-MMM hh:mm:A");
     },
 
     async handleClickIsLock(toggleValue, job) {

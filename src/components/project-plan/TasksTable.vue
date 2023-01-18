@@ -524,21 +524,20 @@ export default {
       const originalTask = this.tasks.find(
         (rawTask) => rawTask.taskId === task.taskId
       );
-
       if (
         isNaN(estimateToCompleteHours) &&
-        originalTask.estToComplHours !== null
+        originalTask.quotedHours !== null &&
+        originalTask.actualHours === null
+      ) {
+        return originalTask.quotedHours;
+      }
+      if (
+        isNaN(estimateToCompleteHours) &&
+        originalTask.quotedHours !== null &&
+        originalTask.actualHours !== null
       ) {
         return null;
       }
-
-      if (
-        isNaN(estimateToCompleteHours) &&
-        originalTask.estToComplHours === null
-      ) {
-        return originalTask.totalForecastHours;
-      }
-
       if (task.actualHours === 0 || task.actualHours === null) {
         return estimateToCompleteHours;
       }

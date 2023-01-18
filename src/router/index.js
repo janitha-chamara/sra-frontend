@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AppLayout from "@/AppLayout";
-import ReportView from "@/views/ReportView";
 import ProjectPlanView from "@/views/ProjectPlanView";
 
 const routes = [
@@ -13,11 +12,6 @@ const routes = [
         path: "/project-plan",
         name: "project-plan",
         component: ProjectPlanView,
-      },
-      {
-        path: "/report",
-        name: "report",
-        component: ReportView,
       },
     ],
   },
