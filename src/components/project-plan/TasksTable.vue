@@ -1,111 +1,65 @@
 <template>
-  <q-dialog
-    full-width
-    full-height
-    :model-value="modelValue"
-    @update:model-value="$emit('update:model-value', false)"
-  >
+  <q-dialog persistent full-width full-height :model-value="modelValue">
     <q-card class="">
       <q-card-section>
-        <div class="flex justify-between text-h6">
-          <div>Tasks</div>
+        <div style="color: #002048" class="flex justify-between text-h6">
+          <div>{{ job.jobId }} {{ job.jobName }}</div>
           <div>
-            <q-btn
-              round
-              dense
-              icon="close"
-              @click="$emit('update:model-value', false)"
-            />
+            <q-btn round dense icon="close" @click="handleClickClose" />
           </div>
         </div>
       </q-card-section>
 
       <q-card-section>
-        <div class="flex flex-col w-full">
-          <div class="flex w-full">
-            <q-chip
-              class="w-1/5 p-4 truncate"
-              square
-              color="blue-5"
-              text-color="white"
-              icon="event"
-              ><span class="truncate">Job Name:{{ job.jobName }}</span></q-chip
-            >
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="blue-5"
-              text-color="white"
-              icon="event"
-              ><span class="truncate"
-                >Client: {{ job.clientName }}</span
-              ></q-chip
-            >
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="blue-5"
-              text-color="white"
-              icon="event"
-              ><span class="truncate"
-                >Status: {{ job.projectStatus }}</span
-              ></q-chip
-            >
+        <div style="color: #002048" class="flex flex-row w-full">
+          <div class="flex flex-row truncate w-1/3">
+            <div class="w-1/5 text-bold">Job Name:</div>
+            <div class="w-1/2">{{ job.jobName }}</div>
           </div>
-          <div class="flex w-full">
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="blue-5"
-              text-color="white"
-              icon="event"
-              ><span class="truncate"
-                >Project Duration:
-                {{
-                  new Date(job.startDate).toLocaleDateString() +
-                  " - " +
-                  new Date(job.dueDate).toLocaleDateString()
-                }}</span
-              ></q-chip
-            >
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="blue-5"
-              text-color="white"
-              icon="event"
-              ><span class="truncate"
-                >Project Manager: {{ job.projectManger }}</span
-              ></q-chip
-            >
-            <q-chip
-              class="w-1/5 p-4"
-              square
-              color="blue-5"
-              text-color="white"
-              icon="event"
-              ><span class="truncate"
-                >Service Delivery Manager: {{ job.sdm }}</span
-              ></q-chip
-            >
+          <div class="flex flex-row truncate w-1/3">
+            <div class="w-1/3 text-bold">Client:</div>
+            <div class="w-1/2">{{ job.clientName }}</div>
           </div>
         </div>
+        <div style="color: #002048" class="flex flex-row mb-4">
+          <div class="flex flex-row truncate w-1/3">
+            <div class="w-1/5 text-bold">Status:</div>
+            <div class="w-1/2">{{ job.projectStatus }}</div>
+          </div>
+          <div class="flex flex-row truncate w-1/3">
+            <div class="w-1/3 text-bold">Project Duration:</div>
+            <div class="w-1/2">
+              {{
+                new Date(job.startDate).toLocaleDateString() +
+                " - " +
+                new Date(job.dueDate).toLocaleDateString()
+              }}
+            </div>
+          </div>
+        </div>
+
+        <!--            <span class="truncate"-->
+        <!--              >Project Manager: {{ job.projectManger }}</span-->
+        <!--            >-->
+        <!--            <span class="truncate"-->
+        <!--              >Service Delivery Manager: {{ job.sdm }}</span-->
+        <!--            >-->
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <div class="flex justify-center">
           <q-table
+            style="color: #002048"
             class="my-sticky-header-table w-5/6"
             :rows="[jobForSummaryTable]"
             :columns="summaryTableColumns"
             row-key="name"
-            title="Project Summary"
             flat
-            table-header-style="background-color: #ffffff"
+            table-header-style="background-color: #D4E7E3"
             dense
             bordered
             hide-bottom
-            table-style="background-color: #87CEFA"
+            table-style="background-color: #D4E7E3"
             @row-click="
               (event, row) => {
                 $emit('row-click', row);
@@ -128,7 +82,7 @@
                   />
                 </div>
                 <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
+                  <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
                 </div>
               </q-td>
             </template>
@@ -144,7 +98,7 @@
                   {{ props.row.currentthroughProject }}
                 </div>
                 <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
+                  <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
                 </div>
               </q-td>
             </template>
@@ -160,7 +114,7 @@
                   {{ props.row.currentQuotedHoursUsed }}
                 </div>
                 <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
+                  <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
                 </div>
               </q-td>
             </template>
@@ -176,7 +130,7 @@
                   {{ props.row.forecastQuotedHours }}
                 </div>
                 <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
+                  <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
                 </div>
               </q-td>
             </template>
@@ -192,14 +146,14 @@
                   {{ props.row.totalHours }}
                 </div>
                 <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
+                  <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
                 </div>
               </q-td>
             </template>
             <template v-slot:body-cell-isLock>
               <q-toggle
                 :model-value="!!job.isLock"
-                color="green"
+                color="deep"
                 @update:model-value="handleClickIsLock($event, job)"
               />
             </template>
@@ -210,6 +164,7 @@
         <q-table
           class="my-sticky-header-table w-full"
           :rows="tasksForTable"
+          style="color: #002048; max-height: 65vh"
           :columns="columns"
           row-key="name"
           flat
@@ -221,6 +176,24 @@
             }
           "
         >
+          <template v-slot:header-cell-taskName="props">
+            <q-th :props="props">Task </q-th>
+          </template>
+          <template v-slot:header-cell-quotedHours="props">
+            <q-th :props="props"> Quoted Hours</q-th>
+          </template>
+          <template v-slot:header-cell-actualHours="props">
+            <q-th :props="props"> Actual Hours</q-th>
+          </template>
+          <template v-slot:header-cell-percentUsed="props">
+            <q-th :props="props">Percent Used </q-th>
+          </template>
+          <template v-slot:header-cell-estToComplHours="props">
+            <q-th :props="props"> Est. to Complete</q-th>
+          </template>
+          <template v-slot:header-cell-totalForecastHours="props">
+            <q-th :props="props"> Forecast Hours</q-th>
+          </template>
           <template v-slot:body-cell-estToComplHours="props">
             <q-td class="flex space-x-1" align="center" :props="props">
               <q-input
@@ -228,6 +201,7 @@
                 dense
                 placeholder="Enter est. to complete"
                 type="number"
+                :class="{ 'bg-[#d89951]': isChanged(props.row) }"
                 :model-value="props.row.estToComplHours"
                 @update:model-value="
                   processTaskWithCalculations(props.row, $event)
@@ -246,25 +220,27 @@
                 {{ props.row.totalForecastHours }}
               </div>
               <div v-else>
-                <q-icon name="warning" color="warning" size="1.5rem" />
+                <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
               </div>
             </q-td>
           </template>
           <template v-slot:bottom-row>
-            <q-tr :props="props">
-              <q-td align="left" class="bg-grey-5 text-bold"> Total </q-td>
-              <q-td align="left" class="bg-grey-5">
+            <q-tr
+              :props="props"
+              style="background-color: #625f59; color: white"
+            >
+              <q-td align="left" class="text-bold"> Total </q-td>
+              <q-td align="left" class="">
                 {{ totalQuotedHours }}
               </q-td>
-              <q-td align="left" class="bg-grey-5">
-                {{ totalActualHours }} </q-td
-              ><q-td align="left" class="bg-grey-5">
+              <q-td align="left" class=""> {{ totalActualHours }} </q-td
+              ><q-td align="left" class="">
                 {{ totalPercentUsed }}
               </q-td>
-              <q-td align="left" class="bg-grey-5">
+              <q-td align="left" class="">
                 <div></div>
               </q-td>
-              <q-td align="left" class="bg-grey-5">
+              <q-td align="left" class="">
                 <div
                   v-if="
                     grandTotalForeCastHours !== null &&
@@ -274,7 +250,7 @@
                   {{ grandTotalForeCastHours }}
                 </div>
                 <div v-else>
-                  <q-icon name="warning" color="warning" size="1.5rem" />
+                  <q-icon name="warning" style="color: #d8766f" size="1.5rem" />
                 </div>
               </q-td>
             </q-tr>
@@ -284,9 +260,13 @@
 
       <q-card-actions align="center">
         <q-btn
-          color="secondary"
-          label="Save"
-          v-close-popup
+          style="background-color: #9cb7a9; color: aliceblue"
+          label="Cancel and close"
+          @click="handleClickClose"
+        />
+        <q-btn
+          style="background-color: #002048; color: aliceblue"
+          label="Save Changes"
           @click="saveTasksWithUpdatedValues"
         />
       </q-card-actions>
@@ -297,8 +277,9 @@
 <script>
 import Http from "@/services/Http";
 import { useToast } from "vue-toastification";
-import { cloneDeep, sumBy } from "lodash";
+import { cloneDeep, isEqual, sumBy } from "lodash";
 import ProgressBar from "@/components/project-plan/ProgressBar";
+import { useQuasar } from "quasar";
 
 export default {
   name: "TasksTable",
@@ -323,6 +304,8 @@ export default {
         rowsPerPage: null,
       },
 
+      $q: useQuasar(),
+
       columns: [
         {
           name: "taskName",
@@ -330,6 +313,7 @@ export default {
           label: "Task",
           field: "taskName",
           sortable: true,
+          headerStyle: "max-width: 200px; background-color: #D4E7E3",
         },
         {
           name: "quotedHours",
@@ -337,6 +321,7 @@ export default {
           label: "Quoted Hours",
           field: "quotedHours",
           sortable: true,
+          headerStyle: "max-width: 200px; background-color: #D4E7E3",
         },
         {
           name: "actualHours",
@@ -344,6 +329,7 @@ export default {
           label: "Actual Hours",
           field: "actualHours",
           sortable: true,
+          headerStyle: "max-width: 200px; background-color: #D4E7E3",
         },
         {
           name: "percentUsed",
@@ -351,6 +337,7 @@ export default {
           label: "Percent Used",
           field: "percentUsed",
           sortable: true,
+          headerStyle: "max-width: 200px; background-color: #D4E7E3",
         },
         {
           name: "estToComplHours",
@@ -358,6 +345,7 @@ export default {
           label: "Est. to Complete",
           field: "estToComplHours",
           sortable: true,
+          headerStyle: "max-width: 200px; background-color: #D4E7E3",
         },
         {
           name: "totalForecastHours",
@@ -365,6 +353,7 @@ export default {
           label: "Forecast Hours",
           field: "totalForecastHours",
           sortable: true,
+          headerStyle: "max-width: 200px; background-color: #D4E7E3",
         },
       ],
       summaryTableColumns: [
@@ -417,6 +406,10 @@ export default {
   },
 
   computed: {
+    hasChanges() {
+      return !isEqual(this.tasksForTable, this.tasks);
+    },
+
     totalQuotedHours() {
       return sumBy(this.tasksForTable.map((task) => task.quotedHours))?.toFixed(
         2
@@ -480,6 +473,25 @@ export default {
   },
 
   methods: {
+    handleClickClose() {
+      if (!this.hasChanges) {
+        this.$emit("update:model-value", false);
+
+        return;
+      }
+
+      this.$q
+        .dialog({
+          title: "Confirm",
+          message: "You have unsaved changes. are you sure want to close?",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(() => {
+          this.$emit("update:model-value", false);
+        });
+    },
+
     async handleClickIsLock(toggleValue, job) {
       await Http.post("Job/UpdateIsLock", {
         ...job,
@@ -495,10 +507,20 @@ export default {
           this.toast.success("Task updated successfully");
 
           this.$emit("update-tasks");
+
+          this.$emit("update:model-value", false);
         })
         .catch(() => {
           this.toast.error("Server error occurred");
         });
+    },
+
+    isChanged(task) {
+      const originalTask = this.tasks.find(
+        (originalTask) => originalTask.taskId === task.taskId
+      );
+
+      return originalTask.estToComplHours !== task.estToComplHours;
     },
 
     processTaskWithCalculations(task, estimateToCompleteHours) {
@@ -574,7 +596,7 @@ export default {
       }
 
       if (percentUsed > percentComplete) {
-        percentUsedColor = "#890303";
+        percentUsedColor = "#D8766F3C";
 
         return [
           {
@@ -591,7 +613,7 @@ export default {
       }
 
       if (percentUsed < percentComplete) {
-        percentUsedColor = "#639438";
+        percentUsedColor = "#4073773C";
 
         return [
           {
@@ -687,4 +709,36 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.my-sticky-header-table {
+  height: auto;
+}
+
+table {
+  border-color: #002048;
+}
+
+tr:hover {
+  background-color: white;
+}
+
+thead tr th {
+  position: sticky;
+  z-index: 1;
+}
+
+thead tr:first-child th {
+  top: 0;
+}
+
+q-table--loading thead tr:last-child th {
+  top: 48px;
+}
+
+.text-toggle {
+  color: #002048 !important;
+}
+.bg-toggle {
+  background: #002048 !important;
+}
+</style>

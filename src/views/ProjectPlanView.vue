@@ -6,28 +6,28 @@
         <q-input
           dense
           outlined
-          v-model="jobNameSearchText"
+          v-model="projectSearchFieldValues.jobNameSearchText"
           class="w-[180px]"
           label="Job Name"
         />
         <q-input
           dense
           outlined
-          v-model="clientSearchText"
+          v-model="projectSearchFieldValues.clientSearchText"
           class="w-[180px]"
           label="Client"
         />
         <q-input
           dense
           outlined
-          v-model="projectManagerSearchText"
+          v-model="projectSearchFieldValues.projectManagerSearchText"
           class="w-[180px]"
           label="Project Manager"
         />
         <q-input
           dense
           outlined
-          v-model="serviceDeliveryManagerSearchText"
+          v-model="projectSearchFieldValues.serviceDeliveryManagerSearchText"
           class="w-[180px]"
           label="Service Delivery Manager"
         />
@@ -35,7 +35,7 @@
     </q-card-section>
     <q-card-section>
       <ProjectsTable
-        :rows="projects"
+        :rows="projectsForTable"
         :is-waiting="isWaiting"
         @row-click="handleClickProjectsTableRow"
         @update-is-lock="fetchJobs"
@@ -68,24 +68,7 @@ export default {
       isOpenTasksModal: false,
       selectedJobTasks: [],
       selectedJob: null,
-      projects: [
-        {
-          job: "Sample",
-          business_unit: "Sample",
-          client: "Sample",
-          project_manager: "Sample",
-          sdm: "Sample",
-          status: "Sample",
-          quoted_hours: "Sample",
-          actual_hours: "Sample",
-          percent_used: "Sample",
-          estimate_to_complete: "Sample",
-          percent_completed: "Sample",
-          difference_percent: "Sample",
-          forecast_hours: "Sample",
-          variance_hours: "Sample",
-        },
-      ],
+      projects: [],
       originalProjects: [
         {
           job: "Sample",
@@ -104,13 +87,15 @@ export default {
           variance_hours: "Sample",
         },
       ],
-      jobNoSearchText: "",
-      jobNameSearchText: "",
-      clientSearchText: "",
-      businessUnitSearchText: "",
-      projectManagerSearchText: "",
-      serviceDeliveryManagerSearchText: "",
-      statusSearchText: "",
+      projectSearchFieldValues: {
+        jobNoSearchText: "",
+        jobNameSearchText: "",
+        clientSearchText: "",
+        businessUnitSearchText: "",
+        projectManagerSearchText: "",
+        serviceDeliveryManagerSearchText: "",
+        statusSearchText: "",
+      },
     };
   },
 
@@ -118,95 +103,95 @@ export default {
     this.fetchJobs();
   },
 
+  computed: {
+    projectsForTable() {
+      if (!this.projects.length) {
+        return;
+      }
+
+      return this.projects.filter((project) => {
+        return (
+          project.jobName
+            .toString()
+            .toLowerCase()
+            .includes(
+              this.projectSearchFieldValues.jobNameSearchText
+                .toString()
+                .toLowerCase()
+            ) &&
+          project.clientName
+            .toString()
+            .toLowerCase()
+            .includes(
+              this.projectSearchFieldValues.clientSearchText
+                .toString()
+                .toLowerCase()
+            ) &&
+          project.projectManger
+            .toString()
+            .toLowerCase()
+            .includes(
+              this.projectSearchFieldValues.projectManagerSearchText
+                .toString()
+                .toLowerCase()
+            ) &&
+          project.sdm
+            .toString()
+            .toLowerCase()
+            .includes(
+              this.projectSearchFieldValues.serviceDeliveryManagerSearchText
+                .toString()
+                .toLowerCase()
+            )
+        );
+      });
+    },
+  },
+
   watch: {
-    jobNameSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          return project.jobName
-            .toString()
-            .toLowerCase()
-            .includes(newValue.toString().toLowerCase());
-        }),
-      ];
-    },
-    clientSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          return project.clientName
-            .toString()
-            .toLowerCase()
-            .includes(newValue.toString().toLowerCase());
-        }),
-      ];
-    },
-    projectManagerSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          if (!project.projectManger) {
-            return false;
-          }
-
-          return project.projectManger
-            .toString()
-            .toLowerCase()
-            .includes(newValue.toString().toLowerCase());
-        }),
-      ];
-    },
-    serviceDeliveryManagerSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          if (!project.sdm) {
-            return false;
-          }
-
-          return project.sdm
-            .toString()
-            .toLowerCase()
-            .includes(newValue.toString().toLowerCase());
-        }),
-      ];
-    },
-    statusSearchText(newValue) {
-      if (newValue === "") {
-        this.projects = [...this.originalProjects];
-
-        return;
-      }
-
-      this.projects = [
-        ...this.projects.filter((project) => {
-          return project.projectStatus
-            .toString()
-            .toLowerCase()
-            .includes(newValue.toString().toLowerCase());
-        }),
-      ];
-    },
+    // projectSearchFieldValues: {
+    //   deep: true,
+    //   handler() {
+    //     this.projects = [
+    //       ...this.projects.filter((project) => {
+    //         return (
+    //           project.jobName
+    //             .toString()
+    //             .toLowerCase()
+    //             .includes(
+    //               this.projectSearchFieldValues.jobNameSearchText
+    //                 .toString()
+    //                 .toLowerCase()
+    //             ) &&
+    //           project.clientName
+    //             .toString()
+    //             .toLowerCase()
+    //             .includes(
+    //               this.projectSearchFieldValues.clientSearchText
+    //                 .toString()
+    //                 .toLowerCase()
+    //             ) &&
+    //           project.projectManger
+    //             .toString()
+    //             .toLowerCase()
+    //             .includes(
+    //               this.projectSearchFieldValues.projectManagerSearchText
+    //                 .toString()
+    //                 .toLowerCase()
+    //             ) &&
+    //           project.sdm
+    //             .toString()
+    //             .toLowerCase()
+    //             .includes(
+    //               this.projectSearchFieldValues.serviceDeliveryManagerSearchText
+    //                 .toString()
+    //                 .toLowerCase()
+    //             )
+    //         );
+    //       }),
+    //     ];
+    //   },
+    // },
   },
 
   methods: {
@@ -274,15 +259,6 @@ export default {
 
       this.projects = [...projectsWithStatusChartOptions];
       this.originalProjects = [...projectsWithStatusChartOptions];
-
-      this.jobNoSearchText = this.jobNoSearchText.toString();
-      this.jobNameSearchText = this.jobNameSearchText.toString();
-      this.clientSearchText = this.clientSearchText.toString();
-      this.businessUnitSearchText = this.businessUnitSearchText.toString();
-      this.projectManagerSearchText = this.projectManagerSearchText.toString();
-      this.serviceDeliveryManagerSearchText =
-        this.serviceDeliveryManagerSearchText.toString();
-      this.statusSearchText = this.statusSearchText.toString();
 
       const lastWmfUpdateDate = orderBy(
         projectsWithStatusChartOptions,
